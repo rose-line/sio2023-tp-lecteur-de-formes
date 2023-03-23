@@ -1,6 +1,6 @@
 # Lecteur de formes
 
-## Démonstration du projet
+## Démonstration du projet (montez le son)
 
 https://user-images.githubusercontent.com/1886792/227051855-121d9694-b161-4590-8250-a5baa2b7a6a4.mp4
 
