@@ -42,19 +42,19 @@ Implémentez les ajouts suivants pour que le projet compile et fonctionne comme 
 
 ### 2. Évolution
 
-En plus des formes-rectangles, on va avoir des formes-ovales.
+En plus des formes-rectangles, on va avoir des formes-ovales. Une première approche pourrait implémenter cela de la façon suivante :
 
 - Le bouton « Forme » courant deviendra « Forme rectangle ».
 
 - Ajoutez un bouton « Forme ovale » en examinant le traitement actuel des boutons et en dupliquant/adaptant ces fonctionnalités.
 
-- Ajoutez une classe qui implémente la nouvelle forme en regardant comment la classe `Forme` fonctionne.
+- Modifier la classe `Forme` pour ajouter le traitement des formes ovales, en associant un instrument différent et une couleur différente pour les formes ovales (vous pouvez consulter le code tout en bas de ce document pour vous aider à implémenter la méthode `contains`).
 
-- Associez un instrument différent et une couleur différente pour les formes ovales.
+Le problème de cette approche est qu'elle est naïve. Il y a beaucoup de code dupliqué et cela va rendre l'implémentation fastidieuse et plus facilement sujette à des bugs. De plus, l'ajout de nouvelles formes pour de nouveaux instruments va intensifier ce problème. On va donc essayer de factoriser le code commun.
 
 ### 3. Refactoring
 
-Vous avez certainement usé de copier/coller lors de l'implémentation de la partie 2. Il y a en effet beaucoup de code réutilisé depuis `OutilForme` et `Forme`. L'objectif ici est de réduire/supprimer la duplication en utilisant l'héritage. On rappelle que le _refactoring_ consiste à modifier le code (en général pour l'améliorer !) _sans changer son comportement_.
+Vous avez certainement usé de copier/coller lors de l'implémentation de la partie 2. Il y a en effet beaucoup de code réutilisé/dupliqué depuis `OutilForme` et `Forme`. L'objectif ici est de réduire/supprimer la duplication en utilisant l'héritage. On rappelle que le _refactoring_ consiste à modifier le code (en général pour l'améliorer !) _sans changer son comportement_.
 
 - Concevez la classe abstraite `Forme` dont vont dériver deux classes concrètes `Rectangle` et `Ovale` ; factorisez (regroupez) le code commun dans la classe abstraite.
 
@@ -71,3 +71,30 @@ L'ajout de nouvelles formes et des outils associés par la suite sera alors gran
 - Parfois, on ne peut pas sélectionner une forme (pour la jouer, la supprimer, etc.) car elle est « à l'intérieur » d'une autre forme, prioritaire dans la sélection. Ajouter un bouton « Passer la forme en arrière-plan » qui fera en sorte que la forme ensuite sélectionnée soit la moins prioritaire pour la sélection par la suite.
 
 - Ajouter d'autres formes correspondants à d'autres couples couleur/instrument.
+
+## Code pour « *hit* » d'un ovale
+
+```java
+contains(Point pt) {
+    final double tolerance = 1.0e-6;
+    double moitieLongueur = longueur / 2.0;
+    double moitieHauteur = hauteur / 2.0;
+    double diff = 0.0;
+
+    if (moitieLongueur > 0.0) {
+        diff = diff + sqrDiff(x + moitieLongueur, pt.x) / (moitieLongueur * moitieLongueur);
+    } else {
+        diff = diff + sqrDiff(x + moitieLongueur, pt.x);
+    }
+    if (moitieHauteur > 0.0) {
+        diff = diff + sqrDiff(y + moitieHauteur, pt.y) / (moitieHauteur * moitieHauteur);
+    } else {
+        diff = diff + sqrDiff(y + moitieHauteur, pt.y);
+    }
+    return  diff <= 1.0 + tolerance;
+}
+
+private double sqrDiff(double num1, double num2) {
+    return (num1 - num2) * (num1 - num2);
+}
+```
